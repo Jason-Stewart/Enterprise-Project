@@ -73,6 +73,15 @@ body {
   
 
 </div>
+  
+<div id="Home">
+
+  <h2>Payment</h2>
+  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+  <p></p>
+</div>
+        
+        
 <a href="home.jsp">
    <button>go back</button>
 </a>
