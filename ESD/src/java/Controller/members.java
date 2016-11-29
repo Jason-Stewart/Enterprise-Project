@@ -5,24 +5,20 @@
  */
 package Controller;
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.Connection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.JdbcQry;
-import java.sql.*;
+
 /**
  *
- * @author wl2-lam
+ * @author Owen Harvey
  */
-public class login extends HttpServlet {
+public class members extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,31 +30,33 @@ public class login extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, SQLException, ClassNotFoundException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        String username=request.getParameter("username");
-        String password=request.getParameter("password");
+
         JdbcQry j;
-        j= new JdbcQry( (Connection) request.getServletContext().getAttribute("connection"));
-         
-       
-       
-        boolean b = j.idcheck(username, password);
-        if (b==true) {
-            boolean a = j.checkAdmin(username);
-            if(a==true){
-             response.sendRedirect("adminhome.jsp");
-        } else{
-                response.sendRedirect("home.html");
-            } }
-            else{
-              response.sendRedirect("error.html");
+        j = new JdbcQry((Connection) request.getServletContext().getAttribute("connection"));
+                        
+        String criteria = request.getParameter("criteria");
+        String value = "'"+request.getParameter("value")+"'";
+        String id = request.getParameter("id");
+        String status = request.getParameter("status");
+        String s;       
+        
+        j.updateMemberStatus(id, status);
+        
+        if((criteria==null)||(value==null)||(criteria.equals(""))||(value.equals(""))){
+           s = j.getMembersTable(); 
         }
-       
+        else{
+           s = j.getMembersTable(criteria, value);
+        }
         
-        
-        
+
+        request.setAttribute("memberTable", s);
+
+        String nextJSP = "/members.jsp";
+        getServletContext().getRequestDispatcher(nextJSP).forward(request, response);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -73,11 +71,7 @@ public class login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -91,11 +85,7 @@ public class login extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /**

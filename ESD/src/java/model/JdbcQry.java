@@ -18,38 +18,152 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-
-
 /**
  *
  * @author Owen Harvey
  */
 public class JdbcQry {
-    
+
     Connection connection = null;
     Statement statement = null;
-    ResultSet rs = null;
     String db = "xyz_assoc";
     ResultSet resultSet;
     LocalDate now = LocalDate.now();
     String startOfYear = now.with(TemporalAdjusters.firstDayOfYear()).toString();
     String endOfYear = now.with(TemporalAdjusters.lastDayOfYear()).toString();
     String today = now.toString();
-    
-
-   
-    
-
 
     Connection con;
-   
+    
+    //update member status
+    public void updateMemberStatus(String id, String status){
+        selectQuery("UPDATE members SET status="+status+" WHERE id="+id);
+    }   
+    //update claim status
+    public void updateClaimStatus(String id, String status){
+        selectQuery("UPDATE claims SET status="+status+" WHERE id="+id);
+    }    
+    
+    //calculate and return turnover of last financial year
+    public String calculateTurnover(){
+        
+        double total = 0;
+        java.util.ArrayList al;
+        
+        selectQuery("SELECT amount FROM payments WHERE date BETWEEN '" + startOfYear + "' AND '" + endOfYear + "'");        
+        
+        try{
+            while(resultSet.next()) {
+                total += resultSet.getFloat(1);
+            }
+            selectQuery("SELECT amount FROM claims WHERE status ='APPROVED' AND date BETWEEN '" + startOfYear + "' AND '" + endOfYear + "'");
+            while(resultSet.next()){
+                total -= resultSet.getFloat(1);
+            }
+        }
+        catch(SQLException e){
+            return "NaN";
+        }
+        
+        return String.valueOf(total);
+    }
+
+    //retrieve the claims table for viewing
+    public String getClaimsTable(){
+        
+        selectQuery("SELECT * FROM Claims");        
+        
+        try{
+        return getTable();
+        }catch(SQLException e){
+            return null;
+        }
+    }
+    
+    //retrieve the payments table for viewing
+    public String getPaymentsTable(){
+        
+        selectQuery("SELECT * FROM payments");        
+        
+        try{
+        return getTable();
+        }catch(SQLException e){
+            return null;
+        }
+    }
+    
+    //retrieve the members table for viewing
+    public String getMembersTable() {
+
+        selectQuery("SELECT * FROM members");
+
+        try {
+            return getTable();
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+    
+    public String getMembersTable(String criteria, String value) {
+
+        selectQuery("SELECT * FROM members WHERE "+criteria+" = "+value);
+
+        try {
+            return getTable();
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    private ArrayList rsToList() throws SQLException {
+        ArrayList aList = new ArrayList();
+
+        int cols = resultSet.getMetaData().getColumnCount();
+        String[] s = new String[cols];
+        
+        for(int i = 0; i<cols; i++){
+            s[i] = resultSet.getMetaData().getColumnName(i+1);
+        }
+        aList.add(s);
+        
+        while (resultSet.next()) {
+            s = new String[cols];
+            for (int i = 1; i <= cols; i++) {
+                s[i - 1] = resultSet.getString(i);
+            }
+            aList.add(s);
+        } // while    
+        return aList;
+    }
+
+    private String makeHtmlTable(ArrayList list) {
+        StringBuilder b = new StringBuilder();
+        String[] row;
+        b.append("<table border=\"3\">");
+        for (Object s : list) {
+            b.append("<tr>");
+            row = (String[]) s;
+            for (String row1 : row) {
+                b.append("<td>");
+                b.append(row1);
+                b.append("</td>");
+            }
+            b.append("</tr>\n");
+        } // for
+        b.append("</table>");
+        return b.toString();
+    }
+
+    String getTable() throws SQLException {
+        return makeHtmlTable(rsToList());
+    }
+
     DecimalFormat df = new DecimalFormat("#.##");
 
     public JdbcQry(Connection con) {
         this.con = con;
     }
 
-    
     public boolean idcheck(String username, String password) throws ClassNotFoundException, SQLException {
 
         boolean found = false;
@@ -116,7 +230,6 @@ public class JdbcQry {
         return admin;
     }//method
 
-
     public boolean idExist(String username) {
 
         boolean exist = false;
@@ -141,10 +254,8 @@ public class JdbcQry {
     public void registerMember(Member member, String password) {
 
         PreparedStatement ps = null;
-        
-             Date currentDate = new Date(Calendar.getInstance().getTimeInMillis());
-       
-       
+
+        Date currentDate = new Date(Calendar.getInstance().getTimeInMillis());
 
         try {
             ps = con.prepareStatement("INSERT INTO members VALUES (?,?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
@@ -172,7 +283,6 @@ public class JdbcQry {
         }
     }
 
-   
     public ArrayList paymentList(String username) {
 
         ArrayList paymentList = new ArrayList();
@@ -317,7 +427,6 @@ public class JdbcQry {
         return response;
     }//method
 
-   
     public ArrayList memberList() {
 
         ArrayList memberList = new ArrayList();
@@ -662,7 +771,7 @@ public class JdbcQry {
         double sum = 0;
         double count = 0;
         double currency = 0;
-        df.setRoundingMode(RoundingMode.FLOOR);        
+        df.setRoundingMode(RoundingMode.FLOOR);
         String queryCount = "SELECT COUNT(*) FROM members";
         String querySum = "SELECT SUM(amount) FROM claims WHERE status ='APPROVED' AND date BETWEEN '" + startOfYear + "' AND '" + endOfYear + "'";
 
@@ -695,5 +804,6 @@ public class JdbcQry {
 
         }
     }//method
+
 }
 //class

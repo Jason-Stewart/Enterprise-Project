@@ -1,7 +1,7 @@
 <%-- 
-    Document   : adminhome
-    Created on : 16-Nov-2016, 14:17:48
-    Author     : wl2-lam
+    Document   : members
+    Created on : 29-Nov-2016, 12:51:29
+    Author     : Owen Harvey
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -69,12 +69,46 @@ body {
 
 </div>
 
-<div id="Home">
+<div id="Members">
 
-  <h2>Admin-Home</h2>
+  <h2>View-Members</h2>
   <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
-  <p>Welcome</p>
+  <p>View/Edit Membership Status</p>
 </div>
+    
+    <body>
+        <form method="POST" action="members">
+            Search: <input type="text" name="value"><br>
+            <select name="criteria">
+            <option value="">Select Field</option>
+            <option value="id">id</option>
+            <option value="name">name</option>
+            <option value="address">address</option>
+            <option value="dob">dob</option>
+            <option value="dor">dor</option>
+            <option value="status">status</option>
+            <option value="balance">balance</option>
+            </select>            
+            <input type="submit" value="Submit"><br>
+        </form>
+        
+    </body>
+    
+<% 
+   String table = (String)request.getAttribute("memberTable");
+   out.println(table);
+%>
+
+<body>
+    <form action="members">
+        ID: <input type="text" name="id" ><br>
+        <select name="status">
+         <option value="APPROVED">approve</option>
+         <option value="SUSPENDED">suspend</option>
+        </select>
+     <input type="submit" value="Submit">
+    </form>
+</body>
 
 <script>
 function openNav() {

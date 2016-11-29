@@ -1,7 +1,7 @@
 <%-- 
-    Document   : adminhome
-    Created on : 16-Nov-2016, 14:17:48
-    Author     : wl2-lam
+    Document   : claims
+    Created on : 29-Nov-2016, 12:52:43
+    Author     : Owen Harvey
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -66,15 +66,32 @@ body {
   <a href="claims">Claims</a>
   <a href="finance">Finance</a>
   
+  
 
 </div>
 
 <div id="Home">
 
-  <h2>Admin-Home</h2>
+  <h2>View-Claims</h2>
   <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
-  <p>Welcome</p>
+  <p>Approve/Decline Claims</p>
 </div>
+    
+    <% 
+   String table = (String)request.getAttribute("claimTable");
+   out.println(table);
+%>
+
+<body>
+    <form action="claims">
+        ID: <input type="text" name="id" ><br>
+        <select name="status">
+         <option value="APPROVED">approve</option>
+         <option value="REJECTED">reject</option>
+        </select>
+     <input type="submit" value="Submit">
+    </form>
+</body>
 
 <script>
 function openNav() {

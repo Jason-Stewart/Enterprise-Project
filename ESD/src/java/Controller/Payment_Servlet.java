@@ -8,13 +8,11 @@ package Controller;
 import model.Payment;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
 import java.util.Calendar;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.JdbcQry;
 
 /**
  *
@@ -39,16 +37,6 @@ public class Payment_Servlet extends HttpServlet {
       
         String cardnum = request.getParameter("cardnum");
         String name =request.getParameter("name");
-        float amount = Float.parseFloat(request.getParameter("amount"));
-        String type = "card";
-        login l = new login();
-        String username=l.getUsername();
-        Payment p = new Payment();
-        p.setAmount(amount);
-        p.setMemID(username);
-        p.setTypeOfPayment(type);
-        JdbcQry j= new JdbcQry( (Connection) request.getServletContext().getAttribute("connection")); 
-                
         temp =request.getParameter("month");
         int month =Integer.parseInt(temp);
         String Year = request.getParameter("Year");
@@ -57,8 +45,7 @@ public class Payment_Servlet extends HttpServlet {
         boolean b = c.credircheck(cardnum);
         Calendar now = Calendar.getInstance();
         
-        if (b==true) {
-            j.makePayment(p);
+        if (month>=now.get(Calendar.MONTH) + 1&&b==true) {
             response.sendRedirect("success.jsp");
         }else{
             response.sendRedirect("payment_error.jsp");

@@ -1,7 +1,7 @@
 <%-- 
-    Document   : adminhome
-    Created on : 16-Nov-2016, 14:17:48
-    Author     : wl2-lam
+    Document   : payments
+    Created on : 29-Nov-2016, 12:53:22
+    Author     : Owen Harvey
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -71,10 +71,19 @@ body {
 
 <div id="Home">
 
-  <h2>Admin-Home</h2>
+  <h2>Financial</h2>
   <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
-  <p>Welcome</p>
+  <p>Financial Information</p>
 </div>
+    
+        
+    <% 
+   String to = (String)request.getAttribute("turnover");
+   out.println("Current turnover is: " + to);
+   
+    String table = (String)request.getAttribute("paymentTable");
+    out.println(table);
+%>
 
 <script>
 function openNav() {
