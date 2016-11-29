@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Claim;
 import model.JdbcQry;
+
 /**
  *
  * @author wl2-lam
@@ -34,12 +35,30 @@ public class Claim_servlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         float amount = Float.parseFloat(request.getParameter("amount"));
         String reason = request.getParameter("reason");
-        Claim c = new Claim();
+        login l = new login();
+        String memID= l.getUsername();
+                Claim c = new Claim();
         c.setAmount(amount);
         c.setRationale(reason);
+        c.setMemID(memID);
         JdbcQry j = new JdbcQry((Connection) request.getServletContext().getAttribute("connection"));
-        j.submitClaim(c);
+       
         
+       if ("".equals(reason))
+       { PrintWriter out = response.getWriter();
+            out.print("No reason given for claim.");
+             out.println("<input type=\"button\" name =go back onclick=\"document.location.href = 'NewClaim.jsp'\" />");
+       }else if(amount <= 0)
+       { PrintWriter out = response.getWriter();
+            out.print("Invalid number.");
+             out.println("<input type=\"button\" name =go back onclick=\"document.location.href = 'NewClaim.jsp'\" />");           
+       }
+       else{
+          
+                j.submitClaim(c);
+                response.sendRedirect("home.jsp");
+
+       }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

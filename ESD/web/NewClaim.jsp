@@ -78,7 +78,7 @@ body {
 
   <h2>New Claim</h2>
   <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
-  <form method="POST" action="claim">
+  <form method="POST" action="Claim">
       Please enter the amount you want to claim:<input type="number" name="amount" ><br>
       please enter the reason of claim:<input type="text" name="reason" ><br>
       <input type="submit" value="Submit"><br>

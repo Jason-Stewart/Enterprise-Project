@@ -33,11 +33,12 @@ public class login extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private String username;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException, ClassNotFoundException {
         response.setContentType("text/html;charset=UTF-8");
         
-        String username=request.getParameter("username");
+         username=request.getParameter("username");
         String password=request.getParameter("password");
         JdbcQry j;
         j= new JdbcQry( (Connection) request.getServletContext().getAttribute("connection"));
@@ -55,11 +56,15 @@ public class login extends HttpServlet {
             else{
               response.sendRedirect("error.jsp");
         }
+        
        
         
         
         
     }
+    public String getUsername()
+    { return this.username; }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

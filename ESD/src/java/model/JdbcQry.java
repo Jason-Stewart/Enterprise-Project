@@ -264,7 +264,9 @@ public class JdbcQry {
     private boolean claimDate(String username, Date claimDate) {
         boolean valid = false;
         String query = "SELECT dor FROM members WHERE id='" + username + "'";
-        Date dorDate = null;
+        Member m = new Member();
+        
+        Date dorDate = m.getDor();
         try {
             selectQuery(query);
             while (resultSet.next()) {
@@ -292,7 +294,7 @@ public class JdbcQry {
         boolean limit = claimLimit(username);
         String response = null;
 
-        if (claimDate(username, currentDate) == true) {
+        
             if (claimLimit(username) == false) {
                 try {
                     ps = con.prepareStatement("INSERT INTO claims(mem_id,date,rationale,status,amount) VALUES (?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
@@ -311,9 +313,7 @@ public class JdbcQry {
             } else {
                 response = "You have already made 2 claims this year.";
             }
-        } else {
-            response = "You must be an approved member for at least 6 months before making claim.";
-        }
+         
         return response;
     }//method
 
